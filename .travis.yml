@@ -1,6 +1,6 @@
 ---
 ## Enable trusty beta (required for gpgv2)
-sudo: required
+#sudo: required
 dist: trusty
 ## Reminder: Travis test only valid on Ubuntu12.04, 14.04 in testing, Centos through docker (leave it to kitchen...)
 language: python
