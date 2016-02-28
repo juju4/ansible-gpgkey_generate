@@ -1,0 +1,32 @@
+---
+sudo: required
+
+## Reminder: Travis test only valid on Ubuntu12.04, 14.04 in testing, Centos through docker (leave it to kitchen...)
+language: python
+python: "2.7"
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq python-apt python-pycurl
+ - ln -s ansible-gpgkey_generate ../gpgkey_generate
+install:
+  - pip install ansible
+#  - "printf '[defaults]\nroles_path = ../' > ansible.cfg"
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+  - cat ansible.cfg
+script:
+  - "echo localhost > inventory"
+
+# Check the role/playbook's syntax.
+  - "ansible-playbook -i inventory --syntax-check test/integration/default/default.yml"
+
+# Run the role/playbook with ansible-playbook.
+  - "ansible-playbook -i inventory --connection=local --sudo -vvvv test/integration/default/default.yml"
+
+# Run the role/playbook again, checking to make sure it's idempotent.
+  - "ansible-playbook -i inventory test/integration/default/default.yml --connection=local --sudo  | grep -q 'changed=0.*failed=0'  && (echo 'Idempotence test: pass' && exit 0)  || (echo 'Idempotence test: fail' && exit 1)"
+#  - >
+#  ansible-playbook -i inventory test/integration/default/default.yml --connection=local --sudo
+#  | grep -q 'changed=0.*failed=0'
+#  && (echo 'Idempotence test: pass' && exit 0)
+#  || (echo 'Idempotence test: fail' && exit 1)
+

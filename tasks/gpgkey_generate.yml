@@ -1,9 +1,9 @@
 ---
 
-## FIXME! https://github.com/ansible/ansible/issues/14597, appears w kitchen, not inside normal vagrant
+## FIXME! https://github.com/ansible/ansible/issues/14597, appears w kitchen & travis, not inside normal vagrant
 - shell: "env"
   register: env
-#- debug: var=env
+- debug: var=env
 - debug: var=ansible_ssh_user
 #- debug: var=ansible_user
 - set_fact:

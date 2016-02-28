@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/juju4/ansible-gpgkey_generate.svg?branch=master)](https://travis-ci.org/juju4/ansible-gpgkey_generate)
+
 # ansible role to generate gpg keys
 
 A simple ansible role to generate gpg keys automatically and with sane secure defaults
