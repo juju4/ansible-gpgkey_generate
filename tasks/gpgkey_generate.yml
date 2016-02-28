@@ -1,6 +1,6 @@
 ---
 
-## FIXME! https://github.com/ansible/ansible/issues/14597, appears w kitchen & travis, not inside normal vagrant
+## FIXME! https://github.com/ansible/ansible/issues/14597, appears w kitchen & travis (local connection: use USERNAME?), not inside normal vagrant
 - shell: "env"
   register: env
 - debug: var=env
@@ -9,8 +9,11 @@
 - set_fact:
     ansible_ssh_user: 'vagrant'
 #  when: gpg_user is not defined or gpg_user != "" or gpg_user == null
-  when: env.stdout.find('SUDO_COMMAND=/bin/bash -c ansible-playbook --inventory-file=/tmp/kitchen/hosts -c local -M /tmp/kitchen/modules /tmp/kitchen/default.yml') != -1 or env.stdout.find('TRAVIS=true') != -1
+  when: env.stdout.find('SUDO_COMMAND=/bin/bash -c ansible-playbook --inventory-file=/tmp/kitchen/hosts -c local -M /tmp/kitchen/modules /tmp/kitchen/default.yml') != -1
 - debug: var=ansible_ssh_user
+- set_fact:
+    ansible_ssh_user: 'root'
+  when: env.stdout.find('TRAVIS=true') != -1
 
 ## Note: gpg_home is the path of user generating keys, it could be gpg_user or different
 - set_fact:
