@@ -1,0 +1,106 @@
+---
+
+## FIXME! https://github.com/ansible/ansible/issues/14597, appears w kitchen, not inside normal vagrant
+- shell: "env"
+  register: env
+#- debug: var=env
+- debug: var=ansible_ssh_user
+#- debug: var=ansible_user
+- set_fact:
+    ansible_ssh_user: 'vagrant'
+#  when: gpg_user is not defined or gpg_user != "" or gpg_user == null
+  when: env.stdout.find('SUDO_COMMAND=/bin/bash -c ansible-playbook --inventory-file=/tmp/kitchen/hosts -c local -M /tmp/kitchen/modules /tmp/kitchen/default.yml') != -1
+- debug: var=ansible_ssh_user
+
+## Note: gpg_home is the path of user generating keys, it could be gpg_user or different
+- set_fact:
+    gpg_home: '/root/'
+  when: gpg_user == 'root'
+- set_fact:
+    gpg_home: "/home/{{ ansible_ssh_user }}"
+  when: gpg_user != 'root'
+
+- name: check entropy state
+  command: "cat /proc/sys/kernel/random/entropy_avail"
+  changed_when: false
+  register: entropy
+- name: entropy state
+  debug: var=entropy
+- name: apt | Ensure have enough randomness
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - rng-tools
+#    - gnupg
+    - gpgv2
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- include: redhat-epel.yml
+- name: yum | Ensure have enough randomness
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - haveged
+    - rng-tools
+    - gnupg
+  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: Enable haveged - redhat
+  service: name=haveged state=started enabled=yes
+  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: check entropy state
+  command: "cat /proc/sys/kernel/random/entropy_avail"
+  changed_when: false
+  register: entropy2
+- name: entropy state
+  debug: var=entropy2
+
+- debug: var=ansible_ssh_user
+- debug: var=ansible_user
+- debug: var=gpg_user
+- debug: var=gpg_home
+
+- name: Ensure .gnupg config directory exists with right permissions
+  file: dest={{ gpg_home }}/.gnupg state=directory mode=0700 owner="{{ ansible_ssh_user }}"
+- name: set defaut gpg options
+  copy: src=gpg.conf dest="{{ gpg_home }}/.gnupg/gpg.conf" mode=0600 owner="{{ ansible_ssh_user }}"
+- name: copy default template for gpg key generation
+  template: src=gen-key-script dest="{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}" mode=0600 owner="{{ ansible_ssh_user }}"
+- name: check existing secret key
+  shell: "gpg --list-secret-keys | grep '{{ gpg_realname }}'"
+  changed_when: false
+  ignore_errors: true
+  become: yes
+  become_user: "{{ ansible_ssh_user }}"
+  register: gpgkeys
+#- debug: var=gpgkeys
+- name: generate gpg key
+  command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }} chdir={{ gpg_home }}"
+  become: yes
+  become_user: "{{ ansible_ssh_user }}"
+  when: gpgkeys.stdout == ""
+  register: genkey
+#- debug: var=genkey
+- name: import generated keys
+  command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
+  become: yes
+  become_user: "{{ ansible_ssh_user }}"
+  when: gpgkeys.stdout == ""
+- name: get user gpg fingerprint
+  shell: "gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}"
+  changed_when: false
+  register: gpg_user_fingerprint
+  become: yes
+  become_user: "{{ ansible_ssh_user }}"
+- name: get user armored public key
+  shell: "gpg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+  changed_when: false
+  become: yes
+  become_user: "{{ ansible_ssh_user }}"
+
+
+- name: fetch files to orchestrator
+  fetch: "src={{ item }} dest=tmp/ flat=yes"
+  with_items:
+#    - "{{ gpg_home }}/{{ gpg_privkeyfile }}"
+#    - "{{ gpg_home }}/{{ gpg_pubkeyfile }}"
+    - "{{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+    - "{{ gpg_home }}/{{ gpg_fingerprint }}"
+  when: gpg_pull is defined and gpg_pull
+

@@ -1,0 +1,12 @@
+%echo Generating a basic OpenPGP key
+Key-Type: 1
+Key-Length: {{ gpg_keylength }}
+Subkey-Type: 1
+Subkey-Length: {{ gpg_subkeylength }}
+Name-Real: {{ gpg_realname }}
+Name-Email: {{ gpg_useremail }}
+Expire-Date: {{ gpg_expire }}
+%pubring {{ gpg_pubkeyfile }}
+%secring {{ gpg_privkeyfile }}
+%commit
+%echo done

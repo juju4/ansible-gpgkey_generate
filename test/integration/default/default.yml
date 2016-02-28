@@ -1,0 +1,6 @@
+---
+
+- hosts: test-kitchen
+  roles:
+    - gpgkey_generate
+
