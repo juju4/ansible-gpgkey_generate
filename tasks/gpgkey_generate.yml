@@ -3,13 +3,15 @@
 ## FIXME! https://github.com/ansible/ansible/issues/14597, appears w kitchen & travis (local connection: use USERNAME?), not inside normal vagrant
 - shell: "env"
   register: env
+  changed_when: false
 - debug: var=env
 - debug: var=ansible_ssh_user
 #- debug: var=ansible_user
 - set_fact:
     ansible_ssh_user: 'vagrant'
 #  when: gpg_user is not defined or gpg_user != "" or gpg_user == null
-  when: env.stdout.find('SUDO_COMMAND=/bin/bash -c ansible-playbook --inventory-file=/tmp/kitchen/hosts -c local -M /tmp/kitchen/modules /tmp/kitchen/default.yml') != -1
+#  when: env.stdout.find('SUDO_COMMAND=/bin/bash -c ansible-playbook --inventory-file=/tmp/kitchen/hosts -c local -M /tmp/kitchen/modules /tmp/kitchen/default.yml') != -1 or env.stdout.find('BUSSER_ROOT=/tmp/verifier') != -1
+  when: env.stdout.find('SUDO_COMMAND=/bin/bash -c ansible-playbook --inventory-file=/tmp/kitchen/hosts -c local -M /tmp/kitchen/modules /tmp/kitchen/default.yml') != -1 or env.stdout.find('SUDO_COMMAND=/tmp/verifier/bin/busser test') != -1
 - debug: var=ansible_ssh_user
 - set_fact:
     ansible_ssh_user: 'root'

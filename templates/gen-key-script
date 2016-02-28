@@ -6,6 +6,9 @@ Subkey-Length: {{ gpg_subkeylength }}
 Name-Real: {{ gpg_realname }}
 Name-Email: {{ gpg_useremail }}
 Expire-Date: {{ gpg_expire }}
+{% if gpg_passphrase is defined and gpg_passphrase %}
+Passphrase: {{ gpg_passphrase }}
+{% endif %}
 %pubring {{ gpg_pubkeyfile }}
 %secring {{ gpg_privkeyfile }}
 %commit

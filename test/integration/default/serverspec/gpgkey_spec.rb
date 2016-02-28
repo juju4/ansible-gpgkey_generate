@@ -8,15 +8,15 @@ describe service('haveged'), :if => os[:family] == 'redhat' do
   it { should be_running }
 end
 
-describe file('/home/vagrant/pubkey') do
+describe file('/home/vagrant/dupont.pub') do
   it { should be_file }
 end
 
-describe file('/home/vagrant/privkey') do
+describe file('/home/vagrant/dupont.priv') do
   it { should be_file }
 end
 
-describe file('/home/vagrant/vagrant.asc') do
+describe file('/home/vagrant/dupont.asc') do
   it { should be_file }
   its(:content) { should match /-----BEGIN PGP PUBLIC KEY BLOCK-----/ }
 end
