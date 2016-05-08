@@ -16,6 +16,7 @@ gpg_keylength: 2048
 gpg_subkeylength: 2048
 gpg_expire: 360
 
-## recover files on orchestrator?
+## recover files on orchestrator? where?
 gpg_pull: true
-
+gpg_pull_privatekey: false
+gpg_pulldir: tmp
