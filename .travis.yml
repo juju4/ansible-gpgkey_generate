@@ -44,14 +44,14 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --connection=local -m setup localhost'
 
   # Ansible syntax check.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm TRAVIS=true ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml --syntax-check'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml --syntax-check'
 
   # Test role.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm TRAVIS=true ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml -e gpg_generator_user=root'
 
   # Test role idempotence.
   - >
-    sudo docker exec "$(cat ${container_id})" env TERM=xterm TRAVIS=true ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml
+    sudo docker exec "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml -e gpg_generator_user=root
     | tee /tmp/idempotency.log
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
