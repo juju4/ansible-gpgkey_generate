@@ -24,10 +24,18 @@
     - rng-tools
 #    - gnupg
     - gpgv2
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
+  become: yes
+- name: apt | Ensure have enough randomness
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - rng-tools
+    - gnupg
+  when: (ansible_distribution == 'Debian' and ansible_distribution_version|int < 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int < 14)
   become: yes
 - include: redhat-epel.yml
   become: yes
+  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 - name: yum | Ensure have enough randomness
   yum: name={{item}} state=present update_cache=yes
   with_items:
@@ -93,6 +101,7 @@
   become_user: "{{ gpg_generator_user }}"
 
 
+- debug: var=gpg_pull
 - name: fetch files to orchestrator
   fetch: "src={{ item }} dest={{ gpg_pulldir }}/ flat=yes"
   with_items:

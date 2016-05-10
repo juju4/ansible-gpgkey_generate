@@ -4,6 +4,7 @@
 - name: RedHat6 | Installing epel rpm key
   rpm_key: key=https://getfedora.org/static/0608B895.txt
            state=present
+           validate_certs=False
   tags:
     - init
   when: ansible_distribution_major_version == "6"
