@@ -1,7 +1,14 @@
 ---
 
 - hosts: all
+  vars:
+    - gpg_generator_user: vagrant
+    - gpg_user: dupont
+    - gpg_realname: 'Dupont user'
+    - gpg_useremail: 'dupont@localhost'
+    - gpg_pubkeyfile: 'dupont.pub'
+    - gpg_privkeyfile: 'dupont.priv'
+    - gpg_pull: false
   roles:
-#    - gpgkey_generate
-    - { role: gpgkey_generate, gpg_user: dupont, gpg_realname: 'Dupont User', gpg_useremail: 'dupont@localhost', gpg_pubkeyfile: 'dupont.pub', gpg_privkeyfile: 'dupont.priv' }
+    - gpgkey_generate
 

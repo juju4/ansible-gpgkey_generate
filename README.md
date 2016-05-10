@@ -60,6 +60,10 @@ $ kitchen verify
 $ kitchen login
 ```
 
+* Travis test has been reviewed to use docker as multi-platform test.
+Because of limitations, some shims are put in place like mapping /dev/urandom to /dev/random so gpg key generation can happen. Normally rng-tools or haveged are taking care of that.
+
+
 ## Troubleshooting & Known issues
 
 None
