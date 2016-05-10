@@ -1,33 +1,65 @@
 ---
-## Enable trusty beta (required for gpgv2)
-#sudo: required
-dist: trusty
-## Reminder: Travis test only valid on Ubuntu12.04, 14.04 in testing, Centos through docker (leave it to kitchen...)
-language: python
-python: "2.7"
+## from https://github.com/geerlingguy/ansible-role-apache/blob/master/.travis.yml
+sudo: required
+
+env:
+  - distribution: centos
+    version: 6
+    init: /sbin/init
+    run_opts: ""
+  - distribution: centos
+    version: 7
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+#    run_opts: ""
+    run_opts: "--privileged"
+  - distribution: ubuntu
+    version: 12.04
+    init: /sbin/init
+    run_opts: ""
+
+services:
+  - docker
+
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install -qq python-apt python-pycurl
- - ln -s ansible-gpgkey_generate ../gpgkey_generate
-install:
-  - pip install ansible
-#  - "printf '[defaults]\nroles_path = ../' > ansible.cfg"
-  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
-  - cat ansible.cfg
+  # - sudo apt-get update
+  # Pull container
+  - 'sudo docker pull ${distribution}:${version}'
+  - env
+  - pwd
+  - find -ls
+  - cp test/travis/initctl_faker test/
+  # Customize container
+  - 'sudo docker build --rm=true --file=test/travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible test'
+
 script:
-  - "echo localhost > inventory"
+  - container_id=$(mktemp)
+    # Run container in detached state
+  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/roles/gpgkey_generate:ro ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-# Check the role/playbook's syntax.
-  - "ansible-playbook -i inventory --syntax-check test/integration/default/default.yml"
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --connection=local -m setup localhost'
 
-# Run the role/playbook with ansible-playbook.
-  - "ansible-playbook -i inventory --connection=local --sudo -vvvv test/integration/default/default.yml"
+  # Ansible syntax check.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml --syntax-check'
 
-# Run the role/playbook again, checking to make sure it's idempotent.
-  - "ansible-playbook -i inventory test/integration/default/default.yml --connection=local --sudo | tee /tmp/idempotency.log | grep -q 'changed=0.*failed=0'  && (echo 'Idempotence test: pass' && exit 0)  || (echo 'Idempotence test: fail' && exit 1)"
-#  - >
-#  ansible-playbook -i inventory test/integration/default/default.yml --connection=local --sudo
-#  | grep -q 'changed=0.*failed=0'
-#  && (echo 'Idempotence test: pass' && exit 0)
-#  || (echo 'Idempotence test: fail' && exit 1)
-  - cat /tmp/idempotency.log
+  # Test role.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml'
+
+  # Test role idempotence.
+  - >
+    sudo docker exec "$(cat ${container_id})" ansible-playbook /etc/ansible/roles/gpgkey_generate/test/integration/default/default.yml
+    | tee /tmp/idempotency.log
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && cat /tmp/idempotency.log && exit 1)
+
+  # Clean up
+  - 'sudo docker stop "$(cat ${container_id})"'
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+
