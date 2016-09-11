@@ -2,7 +2,6 @@
 
 - hosts: all
   vars:
-    - gpg_generator_user: vagrant
     - gpg_user: dupont
     - gpg_realname: 'Dupont user'
     - gpg_useremail: 'dupont@localhost'
