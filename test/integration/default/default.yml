@@ -9,5 +9,5 @@
     - gpg_privkeyfile: 'dupont.priv'
     - gpg_pull: false
   roles:
-    - gpgkey_generate
+    - juju4.gpgkey_generate
 

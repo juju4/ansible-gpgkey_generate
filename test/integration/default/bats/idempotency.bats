@@ -8,8 +8,9 @@
 
 ## FIXME! known failure currently
 ## gpgkey_generate : Enable haveged - redhat
-#@test "Second run should change nothing" {
-#    run bash -c "ansible-playbook -i /tmp/kitchen/hosts /tmp/kitchen/default.yml -c local | tee /tmp/idempotency.log | grep -q 'changed=0.*failed=0' && exit 0 || exit 1"
-#    [ "$status" -eq 0 ]
-#}
+@test "Second run should change nothing" {
+    skip
+    run bash -c "ansible-playbook -i /tmp/kitchen/hosts /tmp/kitchen/default.yml -c local 2>&1 | tee /tmp/idempotency.test | grep -q 'changed=0.*failed=0' && exit 0 || exit 1"
+    [ "$status" -eq 0 ]
+}
 
