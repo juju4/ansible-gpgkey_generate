@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/juju4/ansible-gpgkey_generate.svg?branch=master)](https://travis-ci.org/juju4/ansible-gpgkey_generate)
+[![Build Status - Master](https://travis-ci.org/juju4/ansible-gpgkey_generate.svg?branch=master)](https://travis-ci.org/juju4/ansible-gpgkey_generate)
+[![Build Status - Devel](https://travis-ci.org/juju4/ansible-gpgkey_generate.svg?branch=devel)](https://travis-ci.org/juju4/ansible-gpgkey_generate/branches)
 
 # ansible role to generate gpg keys
 
