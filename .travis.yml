@@ -21,10 +21,11 @@ env:
     init: /sbin/init
 #    run_opts: ""
     run_opts: "--privileged"
-  - distribution: ubuntu
-    version: 12.04
-    init: /sbin/init
-    run_opts: ""
+## ansible2.4 requires python-cryptography, not available
+#  - distribution: ubuntu
+#    version: 12.04
+#    init: /sbin/init
+#    run_opts: ""
 #  - distribution: alpine
 #    version: 3.4
 #    init: /sbin/init
