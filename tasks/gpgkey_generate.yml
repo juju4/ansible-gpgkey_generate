@@ -52,10 +52,16 @@
 
 - name: Ensure .gnupg config directory exists with right permissions
   file: dest={{ gpg_home }}/.gnupg state=directory mode=0700 owner="{{ gpg_generator_user }}"
+
 - name: set defaut gpg options
   copy: src=gpg.conf dest="{{ gpg_home }}/.gnupg/gpg.conf" mode=0600 owner="{{ gpg_generator_user }}"
+
 - name: copy default template for gpg key generation
   template: src=gen-key-script dest="{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}" mode=0600 owner="{{ gpg_generator_user }}"
+
+- include: gpg21.yml
+  when: ansible_distribution_release == 'bionic'
+
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
 - name: check existing secret key
   shell: "gpg --list-secret-keys | grep '{{ gpg_realname }}'"
@@ -65,12 +71,25 @@
   become_user: "{{ gpg_generator_user }}"
   register: gpgkeys
 - debug: var=gpgkeys
+
 - name: generate gpg key
   command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }} chdir={{ gpg_home }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
   when: gpgkeys is defined and gpgkeys.stdout == ""
   register: genkey
+  when: ansible_distribution_release != 'bionic'
+
+- name: generate gpg key
+  command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }} chdir={{ gpg_home }}"
+  become: yes
+  become_user: "{{ gpg_generator_user }}"
+  environment:
+    GPG_TTY: "{{ tty.stdout }}"
+  when: gpgkeys is defined and gpgkeys.stdout == ""
+  register: genkey
+  when: ansible_distribution_release == 'bionic'
+
 #- debug: var=genkey
 - name: import generated keys
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
