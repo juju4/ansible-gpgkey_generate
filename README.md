@@ -11,10 +11,11 @@ A simple ansible role to generate gpg keys automatically and with sane secure de
 It was tested on the following versions:
  * 1.9
  * 2.0
+ * 2.5
 
 ### Operating systems
 
-Verified with kitchen against ubuntu14 and centos7
+Tested on Ubuntu 14.04, 16.04, 18.04 and centos7
 
 ## Example Playbook
 
@@ -24,8 +25,8 @@ For example
 ```
 - hosts: all
   roles:
-    - { role: gpgkey_generate, gpg_user: dupont, gpg_realname: 'Dupont', gpg_useremail: 'dupont@localhost', gpg_pubkeyfile: 'dupont.pub', gpg_privkeyfile: 'dupont.priv' }
-    - { role: gpgkey_generate, gpg_user: dupond, gpg_realname: 'dupond', gpg_useremail: 'dupond@localhost', gpg_pubkeyfile: 'dupond.pub', gpg_privkeyfile: 'dupond.priv' }
+    - { role: juju4.gpgkey_generate, gpg_user: dupont, gpg_realname: 'Dupont', gpg_useremail: 'dupont@localhost', gpg_pubkeyfile: 'dupont.pub', gpg_privkeyfile: 'dupont.priv' }
+    - { role: juju4.gpgkey_generate, gpg_user: dupond, gpg_realname: 'dupond', gpg_useremail: 'dupond@localhost', gpg_pubkeyfile: 'dupond.pub', gpg_privkeyfile: 'dupond.priv' }
 ```
 
 By default, role is retrieving armored public key and fingerprint to orchestrator while leaving secret key on hosts.
@@ -56,7 +57,7 @@ gpg_pull: true
 You can use test-kitchen.
 
 ```
-$ cd /path/to/roles/gpgkey_generate
+$ cd /path/to/roles/juju4.gpgkey_generate
 $ kitchen verify
 $ kitchen login
 ```
