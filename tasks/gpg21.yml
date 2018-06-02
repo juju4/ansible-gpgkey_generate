@@ -3,6 +3,7 @@
 # https://github.com/keybase/keybase-issues/issues/2798
 # https://unix.stackexchange.com/questions/257061/gentoo-linux-gpg-encrypts-properly-a-file-passed-through-parameter-but-throws-i/257065#257065
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=847380
+# https://lists.gnupg.org/pipermail/gnupg-users/2017-April/058162.html
 
 - name: GnuPG 2.1 | Enable loopback pinentry mode in gpg.conf
   lineinfile:

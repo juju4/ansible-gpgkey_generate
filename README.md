@@ -68,7 +68,7 @@ Because of limitations, some shims are put in place like mapping /dev/urandom to
 
 ## Troubleshooting & Known issues
 
-* On bionic with GPG 2.1, you must provide passphrase else you will have an ioctl error.
+* On bionic with GPG 2.1, you must provide passphrase else you will have an ioctl error or add to gen-key template '%no-protection'.
 
 ## License
 

@@ -12,6 +12,8 @@ Passphrase: {{ gpg_passphrase }}
 %no-ask-passphrase
 {% endif %}
 %pubring {{ gpg_pubkeyfile }}
+{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int <= 16)
 %secring {{ gpg_privkeyfile }}
+{% endif %}
 %commit
 %echo done
