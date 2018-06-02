@@ -4,28 +4,23 @@
 # https://unix.stackexchange.com/questions/257061/gentoo-linux-gpg-encrypts-properly-a-file-passed-through-parameter-but-throws-i/257065#257065
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=847380
 
-- name: GnuPG 2.1 | get tty to export GPG_TTY
-  command: tty
-  changed_when: false
-  register: tty
+- name: GnuPG 2.1 | Enable loopback pinentry mode in gpg.conf
+  lineinfile:
+    dest: "{{ gpg_home }}/.gnupg/gpg.conf"
+    owner: "{{ gpg_generator_user }}"
+    mode: '0600'
+    regexp: "{{ item.re }}"
+    line: "{{ item.l }}"
+  with_items:
+    - { re: '^use-agent', l: 'use-agent' }
+    - { re: '^pinentry-mode loopback', l: 'pinentry-mode loopback' }
 
-#- name: GnuPG 2.1 | Enable loopback pinentry mode in gpg.conf
-#  lineinfile:
-#    dest: "{{ gpg_home }}/.gnupg/gpg.conf"
-#    owner: "{{ gpg_generator_user }}"
-#    mode: '0600'
-#    regexp: "{{ item.re }}"
-#    line: "{{ item.l }}"
-#  with_items:
-#    - { re: '^use-agent', l: 'use-agent' } 
-#    - { re: '^pinentry-mode loopback', l: 'pinentry-mode loopback' }
-#
-#- name: GnuPG 2.1 | Enable loopback pinentry mode in gpg-agent.conf
-#  lineinfile:
-#    dest: "{{ gpg_home }}/.gnupg/gpg-agent.conf"
-#    owner: "{{ gpg_generator_user }}"
-#    mode: '0600'
-#    regexp: "{{ item.re }}"
-#    line: "{{ item.l }}"
-#  with_items:
-#    - { re: '^allow-loopback-pinentry', l: 'allow-loopback-pinentry' }
+- name: GnuPG 2.1 | Enable loopback pinentry mode in gpg-agent.conf
+  lineinfile:
+    dest: "{{ gpg_home }}/.gnupg/gpg-agent.conf"
+    owner: "{{ gpg_generator_user }}"
+    mode: '0600'
+    regexp: "{{ item.re }}"
+    line: "{{ item.l }}"
+  with_items:
+    - { re: '^allow-loopback-pinentry', l: 'allow-loopback-pinentry' }

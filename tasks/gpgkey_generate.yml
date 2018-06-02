@@ -78,17 +78,6 @@
   become_user: "{{ gpg_generator_user }}"
   when: gpgkeys is defined and gpgkeys.stdout == ""
   register: genkey
-  when: ansible_distribution_release != 'bionic'
-
-- name: generate gpg key
-  command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }} chdir={{ gpg_home }}"
-  become: yes
-  become_user: "{{ gpg_generator_user }}"
-  environment:
-    GPG_TTY: "{{ tty.stdout }}"
-  when: gpgkeys is defined and gpgkeys.stdout == ""
-  register: genkey
-  when: ansible_distribution_release == 'bionic'
 
 #- debug: var=genkey
 - name: import generated keys
