@@ -10,7 +10,7 @@ gpg_realname: "GPG Ansible user"
 #gpg_userhome:
 gpg_useremail: "{{ gpg_user }}@localhost"
 ## ATTENTION! if not provided, no passphrase! Also, use Ansible Vault!
-#gpg_passphrase: "Passphrase_example.CHANGE_ME!"
+gpg_passphrase: "Passphrase_example.CHANGE_ME!"
 gpg_pubkeyfile: "{{ gpg_user }}.pub"
 gpg_privkeyfile: "{{ gpg_user }}.priv"
 gpg_pubkeyfileexport: "{{ gpg_user }}.asc"
