@@ -14,7 +14,11 @@ describe file('/home/myuser/dupont.pub') do
   it { should be_file }
 end
 
-describe file('/home/myuser/dupont.priv') do
+describe file('/home/myuser/dupont.priv'), :if => os[:family] == 'redhat' do
+  it { should be_file }
+end
+
+describe file('/home/myuser/dupont.priv'), :if => os[:family] == 'ubuntu' && os[:release] != '18.04' do
   it { should be_file }
 end
 
