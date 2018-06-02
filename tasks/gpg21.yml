@@ -22,5 +22,6 @@
     mode: '0600'
     regexp: "{{ item.re }}"
     line: "{{ item.l }}"
+    create: yes
   with_items:
     - { re: '^allow-loopback-pinentry', l: 'allow-loopback-pinentry' }
