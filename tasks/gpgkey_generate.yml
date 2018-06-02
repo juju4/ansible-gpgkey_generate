@@ -54,13 +54,18 @@
   file: dest={{ gpg_home }}/.gnupg state=directory mode=0700 owner="{{ gpg_generator_user }}"
 
 - name: set defaut gpg options
-  copy: src=gpg.conf dest="{{ gpg_home }}/.gnupg/gpg.conf" mode=0600 owner="{{ gpg_generator_user }}"
+  template:
+    src: gpg.conf.j2
+    dest: "{{ gpg_home }}/.gnupg/gpg.conf"
+    mode: '0600'
+    owner: "{{ gpg_generator_user }}"
+    backup: yes
 
 - name: copy default template for gpg key generation
   template: src=gen-key-script dest="{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}" mode=0600 owner="{{ gpg_generator_user }}"
 
 - include: gpg21.yml
-  when: ansible_distribution_release == 'bionic'
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
 - name: check existing secret key
@@ -84,7 +89,7 @@
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
-  when: gpgkeys is defined and gpgkeys.stdout == ""
+  when: gpgkeys is defined and gpgkeys.stdout == "" and not (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16))
 
 - name: get user gpg fingerprint
   shell: "gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}"

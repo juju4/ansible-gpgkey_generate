@@ -5,7 +5,9 @@ use-agent
 
 auto-key-locate cert pka ldap hkps://hkps.pool.sks-keyservers.net
 keyserver hkps://hkps.pool.sks-keyservers.net
+{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int <= 16)
 keyserver-options ca-cert-file=/etc/ssl/certs/sks-keyservers.netCA.pem
+{% endif %}
 keyserver-options no-honor-keyserver-url
 keyserver-options auto-key-retrieve
 
