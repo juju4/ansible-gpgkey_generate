@@ -101,8 +101,6 @@
 
 - name: get user gpg fingerprint
   shell: "gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}"
-- name: get user gpg fingerprint
-  shell: "gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}"
   changed_when: false
   register: gpg_user_fingerprint
   become: yes
@@ -112,7 +110,6 @@
   changed_when: false
   become: yes
   become_user: "{{ gpg_generator_user }}"
-
 
 - debug: var=gpg_pull
 - name: fetch files to orchestrator
