@@ -46,7 +46,9 @@
 - name: Enable haveged - redhat
   service: name=haveged state=started enabled=yes
   become: yes
-  when: ansible_os_family == "RedHat" and not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+  when: >
+    ansible_os_family == "RedHat" and
+    not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
 - name: check entropy state
   command: "cat /proc/sys/kernel/random/entropy_avail"
   changed_when: false
@@ -103,13 +105,17 @@
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
-  when: gpgkeys is defined and gpgkeys.stdout == "" and not (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
+  when: >
+    gpgkeys is defined and not gpgkeys.stdout and
+    not (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
 
 - name: GPG2.1+ | import generated keys
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
-  when: gpgkeys is defined and gpgkeys.stdout == "" and (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
+  when: >
+    gpgkeys is defined and not gpgkeys.stdout and
+    (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
 
 - name: get user gpg fingerprint
   shell: >
