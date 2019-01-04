@@ -6,4 +6,3 @@
   when: ansible_distribution != 'OpenBSD' and ansible_os_family != 'Darwin' and ansible_os_family != "Alpine"
 
 - include: gpgkey_generate.yml
-

@@ -10,4 +10,3 @@
     - gpg_pull: false
   roles:
     - juju4.gpgkey_generate
-

@@ -7,32 +7,42 @@
 - name: entropy state
   debug: var=entropy
 - name: apt | Ensure have enough randomness
-  apt: name={{item}} state=present update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
     - rng-tools
 #    - gnupg
     - gpgv2
 ## https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user
     - acl
-  when: (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
+  when: >
+    (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or
+    (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
   become: yes
+  register: pkg_result
+  until: pkg_result is success
 - name: apt | Ensure have enough randomness
-  apt: name={{item}} state=present update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
     - rng-tools
     - gnupg
-  when: (ansible_distribution == 'Debian' and ansible_distribution_version|int < 7) or (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int < 14)
+  when: >
+    (ansible_distribution == 'Debian' and ansible_distribution_version|int < 7) or
+    (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int < 14)
   become: yes
+  register: pkg_result
+  until: pkg_result is success
 
 - name: yum | Ensure have enough randomness
-  yum: name={{item}} state=present update_cache=yes
+  yum: name={{ item }} state=present update_cache=yes
   with_items:
     - haveged
     - rng-tools
     - gnupg
     - acl
-  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_os_family == "RedHat"
   become: yes
+  register: pkg_result
+  until: pkg_result is success
 - name: Enable haveged - redhat
   service: name=haveged state=started enabled=yes
   become: yes
@@ -59,10 +69,12 @@
     dest: "{{ gpg_home }}/.gnupg/gpg.conf"
     mode: '0600'
     owner: "{{ gpg_generator_user }}"
-    backup: yes
-
 - name: copy default template for gpg key generation
-  template: src=gen-key-script dest="{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}" mode=0600 owner="{{ gpg_generator_user }}"
+  template:
+    src: gen-key-script
+    dest: "{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
+    mode: '0600'
+    owner: "{{ gpg_generator_user }}"
 
 - include: gpg21.yml
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16
@@ -83,7 +95,7 @@
     chdir: "{{ gpg_home }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
-  when: gpgkeys is defined and gpgkeys.stdout == ""
+  when: gpgkeys is defined and not gpgkeys.stdout
   register: genkey
 
 #- debug: var=genkey
@@ -100,7 +112,9 @@
   when: gpgkeys is defined and gpgkeys.stdout == "" and (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
 
 - name: get user gpg fingerprint
-  shell: "gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}"
+  shell: >
+     gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' |
+        tee {{ gpg_home }}/{{ gpg_fingerprint }}
   changed_when: false
   register: gpg_user_fingerprint
   become: yes
@@ -126,5 +140,3 @@
   with_items:
     - "{{ gpg_home }}/{{ gpg_privkeyfile }}"
   when: gpg_pull is defined and gpg_pull and gpg_pull_privatekey is defined and gpg_pull_privatekey
-
-
