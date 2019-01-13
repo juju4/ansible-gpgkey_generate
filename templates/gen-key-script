@@ -1,3 +1,4 @@
+{{ ansible_managed | comment }}
 %echo Generating a basic OpenPGP key
 Key-Type: 1
 Key-Length: {{ gpg_keylength }}
