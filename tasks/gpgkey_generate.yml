@@ -96,7 +96,10 @@
   become_user: "{{ gpg_generator_user }}"
   register: gpgkeys
   no_log: "{{ gpg_no_log }}"
-- debug: var=gpgkeys
+- debug:
+    var: gpgkeys
+    verbosity: 2
+  no_log: "{{ gpg_no_log }}"
 
 - name: generate gpg key
   command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
