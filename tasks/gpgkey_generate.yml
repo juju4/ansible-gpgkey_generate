@@ -95,6 +95,7 @@
   become: yes
   become_user: "{{ gpg_generator_user }}"
   register: gpgkeys
+  no_log: "{{ gpg_no_log }}"
 - debug: var=gpgkeys
 
 - name: generate gpg key
@@ -105,6 +106,7 @@
   become_user: "{{ gpg_generator_user }}"
   when: gpgkeys is defined and not gpgkeys.stdout
   register: genkey
+  no_log: "{{ gpg_no_log }}"
 
 #- debug: var=genkey
 - name: GPG<2.1 | import generated keys
