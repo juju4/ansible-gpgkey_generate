@@ -7,13 +7,15 @@
 - name: entropy state
   debug: var=entropy
 - name: apt | Ensure have enough randomness
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-    - rng-tools
-#    - gnupg
-    - gpgv2
+  apt:
+    name:
+      - rng-tools
+#      - gnupg
+      - gpgv2
 ## https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user
-    - acl
+      - acl
+    state: present
+    update_cache: yes
   when: >
     (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or
     (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
@@ -21,10 +23,12 @@
   register: pkg_result
   until: pkg_result is success
 - name: apt | Ensure have enough randomness
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-    - rng-tools
-    - gnupg
+  apt:
+    name:
+      - rng-tools
+      - gnupg
+    state: present
+    update_cache: yes
   when: >
     (ansible_distribution == 'Debian' and ansible_distribution_version|int < 7) or
     (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int < 14)
@@ -33,12 +37,14 @@
   until: pkg_result is success
 
 - name: yum | Ensure have enough randomness
-  yum: name={{ item }} state=present update_cache=yes
-  with_items:
-    - haveged
-    - rng-tools
-    - gnupg
-    - acl
+  yum:
+    name:
+      - haveged
+      - rng-tools
+      - gnupg
+      - acl
+    state: present
+    update_cache: yes
   when: ansible_os_family == "RedHat"
   become: yes
   register: pkg_result
@@ -119,8 +125,11 @@
 
 - name: get user gpg fingerprint
   shell: >
+     set -o pipefail
      gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' |
         tee {{ gpg_home }}/{{ gpg_fingerprint }}
+  args:
+    executable: /bin/bash
   changed_when: false
   register: gpg_user_fingerprint
   become: yes
