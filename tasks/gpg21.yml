@@ -5,17 +5,6 @@
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=847380
 # https://lists.gnupg.org/pipermail/gnupg-users/2017-April/058162.html
 
-- name: GnuPG 2.1 | Enable loopback pinentry mode in gpg.conf
-  lineinfile:
-    dest: "{{ gpg_home }}/.gnupg/gpg.conf"
-    owner: "{{ gpg_generator_user }}"
-    mode: '0600'
-    regexp: "{{ item.re }}"
-    line: "{{ item.l }}"
-  with_items:
-    - { re: '^use-agent', l: 'use-agent' }
-    - { re: '^pinentry-mode loopback', l: 'pinentry-mode loopback' }
-
 - name: GnuPG 2.1 | Enable loopback pinentry mode in gpg-agent.conf
   lineinfile:
     dest: "{{ gpg_home }}/.gnupg/gpg-agent.conf"
