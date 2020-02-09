@@ -69,7 +69,11 @@
 - debug: var=gpg_home
 
 - name: Ensure .gnupg config directory exists with right permissions
-  file: dest={{ gpg_home }}/.gnupg state=directory mode=0700 owner="{{ gpg_generator_user }}"
+  file:
+    dest: "{{ gpg_home }}/.gnupg"
+    state: directory
+    mode: '0700'
+    owner: "{{ gpg_generator_user }}"
 
 - name: set defaut gpg options
   template:
