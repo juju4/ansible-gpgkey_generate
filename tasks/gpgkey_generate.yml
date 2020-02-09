@@ -133,7 +133,7 @@
     (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
 
 - name: get user gpg fingerprint
-  shell: >
+  shell: |
      set -o pipefail
      gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
   args:
