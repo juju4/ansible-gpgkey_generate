@@ -135,11 +135,10 @@
 - name: get user gpg fingerprint
   shell: >
      set -o pipefail
-     gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' |
-        tee {{ gpg_home }}/{{ gpg_fingerprint }}
+     gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
   args:
     executable: /bin/bash
-  changed_when: false
+    creates: "{{ gpg_home }}/{{ gpg_fingerprint }}"
   register: gpg_user_fingerprint
   become: yes
   become_user: "{{ gpg_generator_user }}"
