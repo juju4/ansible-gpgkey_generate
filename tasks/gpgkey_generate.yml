@@ -122,7 +122,10 @@
   become_user: "{{ gpg_generator_user }}"
   when: >
     gpgkeys is defined and not gpgkeys.stdout and
-    not (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
+    not (
+          (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16) or
+          (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7)
+        )
 
 - name: GPG2.1+ | import generated keys
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
@@ -130,7 +133,10 @@
   become_user: "{{ gpg_generator_user }}"
   when: >
     gpgkeys is defined and not gpgkeys.stdout and
-    (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16)
+    (
+      (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16) or
+      (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7)
+    )
 
 - name: get user gpg fingerprint
   shell: |
