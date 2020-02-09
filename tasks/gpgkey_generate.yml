@@ -135,7 +135,7 @@
 - name: get user gpg fingerprint
   shell: >
      set -o pipefail
-     gpg --fingerprint {{ gpg_useremail }} | awk -F= '/Key fingerprint/ { gsub(/ /,\"\", $2); print $2 }' |
+     gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' |
         tee {{ gpg_home }}/{{ gpg_fingerprint }}
   args:
     executable: /bin/bash
