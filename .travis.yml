@@ -3,11 +3,10 @@
 sudo: required
 
 env:
-## Note: just idempotency failing for haveged service and only centos6
-#  - distribution: centos
-#    version: 6
-#    init: /sbin/init
-#    run_opts: ""
+  - distribution: centos
+    version: 8
+    init: /usr/lib/systemd/systemd
+    run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
   - distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
