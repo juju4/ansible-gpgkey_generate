@@ -97,7 +97,7 @@
   changed_when: false
   ignore_errors: true
   become: yes
-  become_user: "{{ gpg_generator_user }}"
+  become_user: "{{ gpg_user }}"
   register: gpgkeys
   no_log: "{{ gpg_no_log }}"
 - debug:
@@ -119,7 +119,7 @@
 - name: GPG<2.1 | import generated keys
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
-  become_user: "{{ gpg_generator_user }}"
+  become_user: "{{ gpg_user }}"
   when: >
     gpgkeys is defined and not gpgkeys.stdout and
     not (
@@ -130,7 +130,7 @@
 - name: GPG2.1+ | import generated keys
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
   become: yes
-  become_user: "{{ gpg_generator_user }}"
+  become_user: "{{ gpg_user }}"
   when: >
     gpgkeys is defined and not gpgkeys.stdout and
     (
@@ -141,7 +141,8 @@
 - name: get user gpg fingerprint
   shell: |
      set -o pipefail
-     gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
+     gpg --with-fingerprint --with-colons < "{{ gpg_home }}/{{ gpg_pubkeyfile }}" \
+       | awk -F: '$1=="fpr" {print $10}' | tee "{{ gpg_home }}/{{ gpg_fingerprint }}"
   args:
     executable: /bin/bash
     creates: "{{ gpg_home }}/{{ gpg_fingerprint }}"
@@ -149,7 +150,7 @@
   become: yes
   become_user: "{{ gpg_generator_user }}"
 - name: get user armored public key
-  shell: "gpg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+  shell: gpg --enarmor < "{{ gpg_home }}/{{ gpg_pubkeyfile }}" > "{{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
   changed_when: false
   become: yes
   become_user: "{{ gpg_generator_user }}"
