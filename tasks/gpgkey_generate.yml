@@ -54,7 +54,10 @@
   become: yes
   when: >
     ansible_os_family == "RedHat" and
-    not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+    not (ansible_virtualization_type is defined and (
+        ansible_virtualization_type == "docker" or ansible_virtualization_type == "VirtualPC"
+      )
+    )
 - name: check entropy state
   command: "cat /proc/sys/kernel/random/entropy_avail"
   changed_when: false
