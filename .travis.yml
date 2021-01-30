@@ -22,17 +22,8 @@ env:
   - distribution: ubuntu
     version: 14.04
     init: /sbin/init
-#    run_opts: ""
+    # run_opts: ""
     run_opts: "--privileged"
-## ansible2.4 requires python-cryptography, not available
-#  - distribution: ubuntu
-#    version: 12.04
-#    init: /sbin/init
-#    run_opts: ""
-#  - distribution: alpine
-#    version: 3.4
-#    init: /sbin/init
-#    run_opts: ""
 
 services:
   - docker
@@ -51,8 +42,8 @@ before_install:
 
 script:
   - container_id=$(mktemp)
-    # Run container in detached state
-## Note: mapping urandom/random to accelerate gpg key generation. Normally, have rng-tools or haveged to handle that but not running inside docker images we have
+  # Run container in detached state
+  ## Note: mapping urandom/random to accelerate gpg key generation. Normally, have rng-tools or haveged to handle that but not running inside docker images we have
   - 'sudo docker run --detach -v /dev/urandom:/dev/random --volume="${PWD%/*}":/etc/ansible/roles:ro ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
@@ -65,7 +56,7 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.gpgkey_generate/test/integration/default/default.yml -e gpg_generator_user=root -vv'
 
   # Test role idempotence.
-## FIXME! known fail apt module/ansible v2.2
+  ## FIXME! known fail apt module/ansible v2.2
   - >
     sudo docker exec "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.gpgkey_generate/test/integration/default/default.yml -e gpg_generator_user=root
     | tee /tmp/idempotency.log
