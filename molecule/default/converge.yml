@@ -7,6 +7,8 @@
     https_proxy: "{{ lookup('env', 'https_proxy') }}"
     no_proxy: "{{ lookup('env', 'no_proxy') }}"
   remote_user: root
+  vars:
+    gpg_no_log: false
   pre_tasks:
     - name: Ubuntu | Install python3
       raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3-minimal)
