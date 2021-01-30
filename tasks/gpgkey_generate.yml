@@ -10,8 +10,7 @@
   apt:
     name:
       - rng-tools
-      # - gnupg
-      - gpgv2
+      - gnupg
       ## https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user
       - acl
     state: present
