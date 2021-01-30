@@ -13,25 +13,9 @@
         that: >
           entropy['content'] | b64decode | int >= 300
 
-    - name: Ensure /home/myuser/dupont.pub exists
-      stat:
-        path: /home/myuser/dupont.pub
-      register: pub
-    - name: Validate pub key present
-      assert:
-        that: pub.stat.exists and pub.stat.size != 0
-
-    - name: Ensure /home/myuser/dupont.priv exists
-      stat:
-        path: /home/myuser/dupont.priv
-      register: priv
-    - name: Validate priv key present
-      assert:
-        that: priv.stat.exists and priv.stat.size != 0
-
-    - name: Fetch content of /home/myuser/dupont.asc
+    - name: Fetch content of /home/myuser/root.asc
       slurp:
-        src: /home/myuser/dupont.asc
+        src: /home/myuser/root.asc
       register: asc
     - name: Validate asc export file
       assert:
