@@ -38,10 +38,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install molecule[docker] ansible-lint flake8 testinfra ansible
-      - name: run test
+      - name: Environment
         run: |
           pwd
+          env
           find -ls
+      - name: run test
+        run: |
           cd $GITHUB_WORKSPACE/juju4.gpgkey_generate && molecule test
         env:
           PY_COLORS: '1'
