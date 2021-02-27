@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: gpgkey_generate
   author: juju4
   description: Generate automatically gpg keys
   license: BSD
