@@ -64,12 +64,6 @@
 - name: entropy state
   debug: var=entropy2
 
-- debug: var=ansible_ssh_user
-- debug: var=ansible_user
-- debug: var=gpg_generator_user
-- debug: var=gpg_user
-- debug: var=gpg_home
-
 - name: Ensure .gnupg config directory exists with right permissions
   file:
     dest: "{{ gpg_home }}/.gnupg"
@@ -102,7 +96,8 @@
   become_user: "{{ gpg_generator_user }}"
   register: gpgkeys
   no_log: "{{ gpg_no_log }}"
-- debug:
+- name: Debug | gpg keys
+  debug:
     var: gpgkeys
     verbosity: 2
   no_log: "{{ gpg_no_log }}"
@@ -117,7 +112,8 @@
   register: genkey
   no_log: "{{ gpg_no_log }}"
 
-- debug: var=genkey verbosity=1
+- name: Debug | genkey
+  debug: var=genkey verbosity=1
 - name: GPG<2.1 | import generated keys
   command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
@@ -156,7 +152,8 @@
   become: yes
   become_user: "{{ gpg_generator_user }}"
 
-- debug: var=gpg_pull
+- name: Debug | gpg_pull
+  debug: var=gpg_pull
 - name: fetch files to orchestrator
   fetch: "src={{ item }} dest={{ gpg_pulldir }}/ flat=yes"
   with_items:
