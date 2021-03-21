@@ -26,3 +26,6 @@ gpg_no_log: true
 gpg_pull: true
 gpg_pull_privatekey: false
 gpg_pulldir: tmp
+
+gpg_conf_file_template: gpg.conf.j2
+gpg_gen_key_script_template: gen-key-script

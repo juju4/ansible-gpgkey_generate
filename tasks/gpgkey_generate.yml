@@ -1,5 +1,4 @@
 ---
-
 - name: check entropy state
   command: "cat /proc/sys/kernel/random/entropy_avail"
   changed_when: false
@@ -68,20 +67,21 @@
   file:
     dest: "{{ gpg_home }}/.gnupg"
     state: directory
-    mode: '0700'
+    mode: "0700"
     owner: "{{ gpg_generator_user }}"
 
 - name: set defaut gpg options
   template:
-    src: gpg.conf.j2
+    src: "{{ gpg_conf_file_template }}"
     dest: "{{ gpg_home }}/.gnupg/gpg.conf"
-    mode: '0600'
+    mode: "0600"
     owner: "{{ gpg_generator_user }}"
+
 - name: copy default template for gpg key generation
   template:
-    src: gen-key-script
+    src: "{{ gpg_gen_key_script_template }}"
     dest: "{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
-    mode: '0600'
+    mode: "0600"
     owner: "{{ gpg_generator_user }}"
 
 - include: gpg21.yml
@@ -138,8 +138,8 @@
 
 - name: get user gpg fingerprint
   shell: |
-     set -o pipefail
-     gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
+    set -o pipefail
+    gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
   args:
     executable: /bin/bash
     creates: "{{ gpg_home }}/{{ gpg_fingerprint }}"
