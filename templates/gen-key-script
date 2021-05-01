@@ -13,6 +13,7 @@ Expire-Date: {{ gpg_expire }}
 Passphrase: {{ gpg_passphrase }}
 {% else %}
 %no-ask-passphrase
+%no-protection
 {% endif %}
 %pubring {{ gpg_pubkeyfile }}
 {% if (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int <= 16) or (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 7) %}
