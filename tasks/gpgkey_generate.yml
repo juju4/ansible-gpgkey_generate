@@ -14,7 +14,7 @@
       - acl
     state: present
     update_cache: yes
-    cache_valid_time: 7200 #2 hours
+    cache_valid_time: "{{ gpg_apt_cache_valid_time }}"
   when: >
     (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or
     (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
@@ -28,7 +28,7 @@
       - gnupg
     state: present
     update_cache: yes
-    cache_valid_time: 7200 #2 hours
+    cache_valid_time: "{{ gpg_apt_cache_valid_time }}"
   when: >
     (ansible_distribution == 'Debian' and ansible_distribution_version|int < 7) or
     (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int < 14)
