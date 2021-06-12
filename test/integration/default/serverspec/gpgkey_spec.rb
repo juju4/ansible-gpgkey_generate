@@ -26,4 +26,3 @@ describe file('/home/myuser/dupont.asc') do
   it { should be_file }
   its(:content) { should match /-----BEGIN PGP PUBLIC KEY BLOCK-----/ }
 end
-

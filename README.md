@@ -73,6 +73,3 @@ Because of limitations, some shims are put in place like mapping /dev/urandom to
 ## License
 
 BSD 2-clause
-
-
-
