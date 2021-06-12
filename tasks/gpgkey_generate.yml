@@ -53,7 +53,7 @@
   when: >
     ansible_os_family == "RedHat" and
     not (ansible_virtualization_type is defined and (
-        ansible_virtualization_type == "docker" or ansible_virtualization_type == "VirtualPC"
+        ansible_virtualization_type == "docker" or ansible_virtualization_type == "containerd"
       )
     )
 - name: check entropy state
