@@ -33,23 +33,21 @@ By default, role is retrieving armored public key and fingerprint to orchestrato
 
 ## Variables
 
+Complete list of available variables can be found in
+[defaults/main.yml](defaults/main.yml).
+
+Notable variables are:
 ```
+gpg_generator_user: "{{ ansible_ssh_user }}"
 gpg_user: "{{ ansible_ssh_user }}"
+
 gpg_realname: "GPG Ansible user"
-#gpg_userhome:
 gpg_useremail: "{{ gpg_user }}@localhost"
-gpg_pubkeyfile: "{{ gpg_user }}.pub"
-gpg_privkeyfile: "{{ gpg_user }}.priv"
-gpg_pubkeyfileexport: "{{ gpg_user }}.asc"
-gpg_fingerprint: "{{ gpg_user }}-fingerprint"
+gpg_passphrase: "Passphrase_example.CHANGE_ME!"
 
 gpg_keylength: 2048
 gpg_subkeylength: 2048
 gpg_expire: 360
-
-## recover files on orchestrator?
-gpg_pull: true
-
 ```
 
 ## Continuous integration
@@ -65,10 +63,6 @@ $ kitchen login
 * Travis test has been reviewed to use docker as multi-platform test.
 Because of limitations, some shims are put in place like mapping /dev/urandom to /dev/random so gpg key generation can happen. Normally rng-tools or haveged are taking care of that.
 
-
-## Troubleshooting & Known issues
-
-* On bionic with GPG 2.1, you must provide passphrase else you will have an ioctl error or add to gen-key template '%no-protection'.
 
 ## License
 
