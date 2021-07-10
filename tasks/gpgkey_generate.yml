@@ -5,6 +5,13 @@
   register: entropy
 - name: entropy state
   debug: var=entropy
+
+- name: apt | Update cache
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ gpgkey_generate_apt_cache_valid_time | default('3600') }}"
+  when: ansible_os_family == 'Debian'
+  become: yes
 - name: apt | Ensure have enough randomness
   apt:
     name:
@@ -13,7 +20,6 @@
       ## https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user
       - acl
     state: present
-    update_cache: yes
   when: >
     (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or
     (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
