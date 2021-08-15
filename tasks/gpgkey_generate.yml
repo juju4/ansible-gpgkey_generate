@@ -5,6 +5,13 @@
   register: entropy
 - name: entropy state
   debug: var=entropy
+
+- name: apt | Update cache
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ gpgkey_generate_apt_cache_valid_time | default('3600') }}"
+  when: ansible_os_family == 'Debian'
+  become: yes
 - name: apt | Ensure have enough randomness
   apt:
     name:
@@ -55,7 +62,7 @@
   when: >
     ansible_os_family == "RedHat" and
     not (ansible_virtualization_type is defined and (
-        ansible_virtualization_type == "docker" or ansible_virtualization_type == "VirtualPC"
+        ansible_virtualization_type == "docker" or ansible_virtualization_type == "containerd"
       )
     )
 - name: check entropy state
