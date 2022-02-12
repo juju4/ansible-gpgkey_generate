@@ -93,7 +93,7 @@
     mode: "0600"
     owner: "{{ gpg_generator_user }}"
 
-- include: gpg21.yml
+- import_tasks: gpg21.yml
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
