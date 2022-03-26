@@ -6,7 +6,7 @@
 # https://lists.gnupg.org/pipermail/gnupg-users/2017-April/058162.html
 
 - name: GnuPG 2.1 | Enable loopback pinentry mode in gpg-agent.conf
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ gpg_home }}/.gnupg/gpg-agent.conf"
     owner: "{{ gpg_generator_user }}"
     mode: '0600'

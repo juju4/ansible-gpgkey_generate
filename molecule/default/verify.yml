@@ -5,19 +5,19 @@
   tasks:
 
     - name: Fetch content of /proc/sys/kernel/random/entropy_avail
-      slurp:
+      ansible.builtin.slurp:
         src: /proc/sys/kernel/random/entropy_avail
       register: entropy
     - name: Validate entropy
-      assert:
+      ansible.builtin.assert:
         that: >
           entropy['content'] | b64decode | int >= 300
 
     - name: Fetch content of /home/myuser/root.asc
-      slurp:
+      ansible.builtin.slurp:
         src: /home/myuser/root.asc
       register: asc
     - name: Validate asc export file
-      assert:
+      ansible.builtin.assert:
         that: >
           "'-----BEGIN PGP PUBLIC KEY BLOCK-----' in asc['content'] | b64decode"
