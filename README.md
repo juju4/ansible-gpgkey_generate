@@ -38,8 +38,8 @@ Complete list of available variables can be found in
 
 Notable variables are:
 ```
-gpg_generator_user: "{{ ansible_ssh_user }}"
-gpg_user: "{{ ansible_ssh_user }}"
+gpg_generator_user: "{{ ansible_user }}"
+gpg_user: "{{ ansible_user }}"
 
 gpg_realname: "GPG Ansible user"
 gpg_useremail: "{{ gpg_user }}@localhost"

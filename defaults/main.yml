@@ -1,11 +1,11 @@
 ---
-# gpg_generator_user: "{{ ansible_ssh_user }}"
+# gpg_generator_user: "{{ ansible_user }}"
 gpg_generator_user: "myuser"
 ## Note: gpg_home is the path of user generating keys, it could be gpg_user or different.
 ##   it's both keys destination and home path for .gnupg dir
 gpg_home: "/home/{{ gpg_generator_user }}"
 
-gpg_user: "{{ ansible_ssh_user }}"
+gpg_user: "{{ ansible_user }}"
 gpg_realname: "GPG Ansible user"
 # gpg_userhome:
 gpg_useremail: "{{ gpg_user }}@localhost"
