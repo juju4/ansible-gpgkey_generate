@@ -1,18 +1,18 @@
 ---
-- name: check entropy state
+- name: Check entropy state
   ansible.builtin.command: "cat /proc/sys/kernel/random/entropy_avail"
   changed_when: false
   register: entropy
-- name: entropy state
+- name: Entropy state
   ansible.builtin.debug: var=entropy
 
-- name: apt | Update cache
+- name: Debian | Update cache
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: "{{ gpgkey_generate_apt_cache_valid_time | default('3600') }}"
   when: ansible_os_family == 'Debian'
   become: yes
-- name: apt | Ensure have enough randomness
+- name: Debian | Ensure have enough randomness
   ansible.builtin.apt:
     name:
       - rng-tools
@@ -28,7 +28,7 @@
   become: yes
   register: pkg_result
   until: pkg_result is success
-- name: apt | Ensure have enough randomness
+- name: Debian | Ensure have enough randomness
   ansible.builtin.apt:
     name:
       - rng-tools
@@ -43,7 +43,7 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: yum | Ensure have enough randomness
+- name: Redhat | Ensure have enough randomness
   ansible.builtin.yum:
     name:
       - haveged
@@ -65,11 +65,11 @@
         ansible_virtualization_type == "docker" or ansible_virtualization_type == "containerd"
       )
     )
-- name: check entropy state
+- name: Check entropy state
   ansible.builtin.command: "cat /proc/sys/kernel/random/entropy_avail"
   changed_when: false
   register: entropy2
-- name: entropy state
+- name: Entropy state
   ansible.builtin.debug: var=entropy2
 
 - name: Ensure .gnupg config directory exists with right permissions
@@ -79,14 +79,14 @@
     mode: "0700"
     owner: "{{ gpg_generator_user }}"
 
-- name: set defaut gpg options
+- name: Set defaut gpg options
   ansible.builtin.template:
     src: "{{ gpg_conf_file_template }}"
     dest: "{{ gpg_home }}/.gnupg/gpg.conf"
     mode: "0600"
     owner: "{{ gpg_generator_user }}"
 
-- name: copy default template for gpg key generation
+- name: Copy default template for gpg key generation
   ansible.builtin.template:
     src: "{{ gpg_gen_key_script_template }}"
     dest: "{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
@@ -97,7 +97,7 @@
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
-- name: check existing secret key
+- name: Check existing secret key
   ansible.builtin.shell: "gpg --list-secret-keys | grep '{{ gpg_realname }}'"
   changed_when: false
   ignore_errors: true
@@ -111,7 +111,7 @@
     verbosity: 2
   no_log: "{{ gpg_no_log }}"
 
-- name: generate gpg key
+- name: Generate gpg key
   ansible.builtin.command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
   args:
     chdir: "{{ gpg_home }}"
@@ -145,7 +145,7 @@
       (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7)
     )
 
-- name: get user gpg fingerprint
+- name: Get user gpg fingerprint
   ansible.builtin.shell: |
     set -o pipefail
     gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
@@ -155,7 +155,7 @@
   register: gpg_user_fingerprint
   become: yes
   become_user: "{{ gpg_generator_user }}"
-- name: get user armored public key
+- name: Get user armored public key
   ansible.builtin.shell: "gpg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
   changed_when: false
   become: yes
@@ -163,7 +163,7 @@
 
 - name: Debug | gpg_pull
   ansible.builtin.debug: var=gpg_pull
-- name: fetch files to orchestrator
+- name: Fetch files to orchestrator
   ansible.builtin.fetch: "src={{ item }} dest={{ gpg_pulldir }}/ flat=yes"
   with_items:
     # - "{{ gpg_home }}/{{ gpg_privkeyfile }}"
@@ -172,7 +172,7 @@
     - "{{ gpg_home }}/{{ gpg_fingerprint }}"
   when: gpg_pull is defined and gpg_pull
 
-- name: fetch privatekey file to orchestrator
+- name: Fetch privatekey file to orchestrator
   ansible.builtin.fetch: "src={{ item }} dest={{ gpg_pulldir }}/ flat=yes"
   with_items:
     - "{{ gpg_home }}/{{ gpg_privkeyfile }}"
