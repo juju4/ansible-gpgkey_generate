@@ -49,6 +49,7 @@ jobs:
           mkdir -p $HOME/.cache/molecule/juju4.gpgkey_generate/default && ln -s $HOME/.ansible/roles $HOME/.cache/molecule/juju4.gpgkey_generate/default/roles
       - name: Environment
         run: |
+          set -x
           pwd
           env
           find -ls
