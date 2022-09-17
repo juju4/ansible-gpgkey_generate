@@ -12,6 +12,7 @@
       ansible.builtin.assert:
         that: >
           entropy['content'] | b64decode | int >= 300
+      failed_when: false
 
     - name: Fetch content of /home/myuser/root.asc
       ansible.builtin.slurp:
