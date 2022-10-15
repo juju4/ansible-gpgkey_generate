@@ -84,7 +84,7 @@
     mode: "0700"
     owner: "{{ gpg_generator_user }}"
 
-- name: Set defaut gpg options
+- name: Set default gpg options
   ansible.builtin.template:
     src: "{{ gpg_conf_file_template }}"
     dest: "{{ gpg_home }}/.gnupg/gpg.conf"
