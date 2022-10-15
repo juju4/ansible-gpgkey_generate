@@ -4,7 +4,8 @@
   changed_when: false
   register: entropy
 - name: Entropy state
-  ansible.builtin.debug: var=entropy
+  ansible.builtin.debug:
+    var: entropy
 
 - name: Debian | Update cache
   ansible.builtin.apt:
@@ -57,7 +58,10 @@
   register: pkg_result
   until: pkg_result is success
 - name: Enable haveged - redhat
-  ansible.builtin.service: name=haveged state=started enabled=yes
+  ansible.builtin.service:
+    name: haveged
+    state: started
+    enabled: yes
   become: yes
   when: >
     ansible_os_family == "RedHat" and
@@ -70,7 +74,8 @@
   changed_when: false
   register: entropy2
 - name: Entropy state
-  ansible.builtin.debug: var=entropy2
+  ansible.builtin.debug:
+    var: entropy2
 
 - name: Ensure .gnupg config directory exists with right permissions
   ansible.builtin.file:
@@ -93,7 +98,8 @@
     mode: "0600"
     owner: "{{ gpg_generator_user }}"
 
-- import_tasks: gpg21.yml
+- name: Import gpg21
+  ansible.builtin.import_tasks: gpg21.yml
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
@@ -122,7 +128,9 @@
   no_log: "{{ gpg_no_log }}"
 
 - name: Debug | genkey
-  ansible.builtin.debug: var=genkey verbosity=1
+  ansible.builtin.debug:
+    var: genkey
+    verbosity: 1
 - name: GPG<2.1 | import generated keys
   ansible.builtin.command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
@@ -157,14 +165,19 @@
   become_user: "{{ gpg_generator_user }}"
 - name: Get user armored public key
   ansible.builtin.shell: "gpg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
-  changed_when: false
+  args:
+    creates: "{{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
 
 - name: Debug | gpg_pull
-  ansible.builtin.debug: var=gpg_pull
+  ansible.builtin.debug:
+    var: gpg_pull
 - name: Fetch files to orchestrator
-  ansible.builtin.fetch: "src={{ item }} dest={{ gpg_pulldir }}/ flat=yes"
+  ansible.builtin.fetch:
+    src: "{{ item }}"
+    dest: "{{ gpg_pulldir }}/"
+    flat: "yes"
   with_items:
     # - "{{ gpg_home }}/{{ gpg_privkeyfile }}"
     # - "{{ gpg_home }}/{{ gpg_pubkeyfile }}"
@@ -173,7 +186,10 @@
   when: gpg_pull is defined and gpg_pull
 
 - name: Fetch privatekey file to orchestrator
-  ansible.builtin.fetch: "src={{ item }} dest={{ gpg_pulldir }}/ flat=yes"
+  ansible.builtin.fetch:
+    src: "{{ item }}"
+    dest: "{{ gpg_pulldir }}/"
+    flat: "yes"
   with_items:
     - "{{ gpg_home }}/{{ gpg_privkeyfile }}"
   when: gpg_pull is defined and gpg_pull and gpg_pull_privatekey is defined and gpg_pull_privatekey

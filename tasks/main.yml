@@ -1,9 +1,12 @@
 ---
 
-- import_tasks: travis.yml
+- name: Import travis
+  ansible.builtin.import_tasks: travis.yml
 
 - name: Ensure user exists
-  ansible.builtin.user: name={{ gpg_generator_user }}
+  ansible.builtin.user:
+    name: "{{ gpg_generator_user }}"
   when: ansible_distribution != 'OpenBSD' and ansible_os_family != 'Darwin' and ansible_os_family != "Alpine"
 
-- import_tasks: gpgkey_generate.yml
+- name: Import gpgkey_generate
+  ansible.builtin.import_tasks: gpgkey_generate.yml
