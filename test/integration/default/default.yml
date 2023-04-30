@@ -1,12 +1,13 @@
 ---
 
-- hosts: all
+- name: Test integration playbook
+  hosts: all
   vars:
-    - gpg_user: dupont
-    - gpg_realname: 'Dupont user'
-    - gpg_useremail: 'dupont@localhost'
-    - gpg_pubkeyfile: 'dupont.pub'
-    - gpg_privkeyfile: 'dupont.priv'
-    - gpg_pull: false
+    gpg_user: dupont
+    gpg_realname: 'Dupont user'
+    gpg_useremail: 'dupont@localhost'
+    gpg_pubkeyfile: 'dupont.pub'
+    gpg_privkeyfile: 'dupont.priv'
+    gpg_pull: false
   roles:
     - juju4.gpgkey_generate

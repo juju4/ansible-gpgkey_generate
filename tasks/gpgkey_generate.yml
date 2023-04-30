@@ -117,7 +117,7 @@
     verbosity: 2
   no_log: "{{ gpg_no_log }}"
 
-- name: Generate gpg key
+- name: Generate gpg key  # noqa no-changed-when
   ansible.builtin.command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
   args:
     chdir: "{{ gpg_home }}"
@@ -131,7 +131,7 @@
   ansible.builtin.debug:
     var: genkey
     verbosity: 1
-- name: GPG<2.1 | import generated keys
+- name: GPG<2.1 | import generated keys  # noqa no-changed-when
   ansible.builtin.command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
@@ -142,7 +142,7 @@
           (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7)
         )
 
-- name: GPG2.1+ | import generated keys
+- name: GPG2.1+ | import generated keys  # noqa no-changed-when
   ansible.builtin.command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
