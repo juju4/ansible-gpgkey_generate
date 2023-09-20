@@ -14,6 +14,11 @@ galaxy_info:
         - bionic
         - focal
         - jammy
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+        - bookworm
   galaxy_tags:
     - security
 dependencies:

@@ -28,6 +28,6 @@ gpg_pull_privatekey: false
 gpg_pulldir: tmp
 
 gpg_conf_file_template: gpg.conf.j2
-gpg_gen_key_script_template: gen-key-script
+gpg_passphrase_file: 'passphrase.key'
 
 gpg_apt_cache_valid_time: 3600  # 1 hour

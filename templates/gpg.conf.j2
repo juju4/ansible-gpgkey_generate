@@ -3,13 +3,9 @@
 
 #keyserver hkp://keys.gnupg.net
 use-agent
-
-{% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16 %}
 # GPG 2.1+
-use-agent
 pinentry-mode loopback
 
-{% endif %}
 auto-key-locate cert pka ldap hkps://hkps.pool.sks-keyservers.net
 keyserver hkps://hkps.pool.sks-keyservers.net
 {% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int <= 16 %}
