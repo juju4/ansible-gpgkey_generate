@@ -104,7 +104,7 @@
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
 - name: Check existing secret key
-  ansible.builtin.shell: "gpg --list-secret-keys | grep '{{ gpg_realname }}'"
+  ansible.builtin.shell: "gpg --homedir {{ gpg_home }}/.gnupg --list-secret-keys | grep '{{ gpg_realname }}'"
   changed_when: false
   ignore_errors: true
   become: yes
@@ -118,7 +118,7 @@
   no_log: "{{ gpg_no_log }}"
 
 - name: Generate gpg key  # noqa no-changed-when
-  ansible.builtin.command: "gpg --batch --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
+  ansible.builtin.command: "gpg --batch --homedir {{ gpg_home }}/.gnupg --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
   args:
     chdir: "{{ gpg_home }}"
   become: yes
@@ -132,7 +132,7 @@
     var: genkey
     verbosity: 1
 - name: GPG<2.1 | import generated keys  # noqa no-changed-when
-  ansible.builtin.command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
+  ansible.builtin.command: "gpg --homedir {{ gpg_home }}/.gnupg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
   when: >
@@ -143,7 +143,7 @@
         )
 
 - name: GPG2.1+ | import generated keys  # noqa no-changed-when
-  ansible.builtin.command: "gpg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
+  ansible.builtin.command: "gpg --homedir {{ gpg_home }}/.gnupg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
   when: >
@@ -156,7 +156,7 @@
 - name: Get user gpg fingerprint
   ansible.builtin.shell: |
     set -o pipefail
-    gpg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
+    gpg --homedir {{ gpg_home }}/.gnupg --list-keys --keyid-format LONG {{ gpg_useremail }} | awk -F'[ /]' '/sub/ { print $5 }' | tee {{ gpg_home }}/{{ gpg_fingerprint }}
   args:
     executable: /bin/bash
     creates: "{{ gpg_home }}/{{ gpg_fingerprint }}"
@@ -164,7 +164,7 @@
   become: yes
   become_user: "{{ gpg_generator_user }}"
 - name: Get user armored public key
-  ansible.builtin.shell: "gpg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+  ansible.builtin.shell: "gpg --homedir {{ gpg_home }}/.gnupg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
   args:
     creates: "{{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
   become: yes
