@@ -106,11 +106,11 @@
 - name: Check existing secret key
   ansible.builtin.shell: "gpg --homedir {{ gpg_home }}/.gnupg --list-secret-keys | grep '{{ gpg_realname }}'"
   changed_when: false
-  ignore_errors: true
   become: yes
   become_user: "{{ gpg_generator_user }}"
   register: gpgkeys
   no_log: "{{ gpg_no_log }}"
+  failed_when: gpgkeys.rc > 1
 - name: Debug | gpg keys
   ansible.builtin.debug:
     var: gpgkeys
