@@ -104,7 +104,12 @@
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
 - name: Check existing secret key
-  ansible.builtin.shell: "gpg --homedir {{ gpg_home }}/.gnupg --list-secret-keys | grep '{{ gpg_realname }}'"
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      gpg --homedir {{ gpg_home }}/.gnupg --list-secret-keys | grep '{{ gpg_realname }}'
+  args:
+    executable: /bin/bash
   changed_when: false
   become: yes
   become_user: "{{ gpg_generator_user }}"
