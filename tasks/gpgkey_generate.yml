@@ -91,12 +91,13 @@
     mode: "0600"
     owner: "{{ gpg_generator_user }}"
 
-- name: Copy default template for gpg key generation
-  ansible.builtin.template:
-    src: "{{ gpg_gen_key_script_template }}"
-    dest: "{{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
+- name: Write GPG passphrase to file
+  ansible.builtin.copy:
+    content: "{{ gpg_passphrase }}"
+    dest: "{{ gpg_home + '/' + gpg_passphrase_file }}"
     mode: "0600"
     owner: "{{ gpg_generator_user }}"
+  register: passphrase_file_created
 
 - name: Import gpg21
   ansible.builtin.import_tasks: gpg21.yml
@@ -107,7 +108,7 @@
   ansible.builtin.shell:
     cmd: |
       set -o pipefail
-      gpg --homedir {{ gpg_home }}/.gnupg --list-secret-keys | grep '{{ gpg_realname }}'
+      gpg --batch --homedir {{ gpg_home }}/.gnupg --list-secret-keys | grep '{{ gpg_realname }}'
   args:
     executable: /bin/bash
   changed_when: false
@@ -123,7 +124,11 @@
   no_log: "{{ gpg_no_log }}"
 
 - name: Generate gpg key  # noqa no-changed-when
-  ansible.builtin.command: "gpg --batch --homedir {{ gpg_home }}/.gnupg --gen-key {{ gpg_home }}/.gnupg/gen-key-script-{{ gpg_user }}"
+  ansible.builtin.command: >
+    gpg --batch --homedir "{{ gpg_home }}/.gnupg"
+        --passphrase-file "{{ gpg_home + '/' + gpg_passphrase_file }}"
+        --quick-generate-key "{{ gpg_realname }} {{ gpg_useremail }}"
+        future-default default "{{ gpg_expire | default('10y') }}"
   args:
     chdir: "{{ gpg_home }}"
   become: yes
@@ -136,27 +141,6 @@
   ansible.builtin.debug:
     var: genkey
     verbosity: 1
-- name: GPG<2.1 | import generated keys  # noqa no-changed-when
-  ansible.builtin.command: "gpg --homedir {{ gpg_home }}/.gnupg --import {{ gpg_home }}/{{ gpg_pubkeyfile }} {{ gpg_home }}/{{ gpg_privkeyfile }}"
-  become: yes
-  become_user: "{{ gpg_generator_user }}"
-  when: >
-    gpgkeys is defined and not gpgkeys.stdout and
-    not (
-          (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16) or
-          (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7)
-        )
-
-- name: GPG2.1+ | import generated keys  # noqa no-changed-when
-  ansible.builtin.command: "gpg --homedir {{ gpg_home }}/.gnupg --import {{ gpg_home }}/{{ gpg_pubkeyfile }}"
-  become: yes
-  become_user: "{{ gpg_generator_user }}"
-  when: >
-    gpgkeys is defined and not gpgkeys.stdout and
-    (
-      (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16) or
-      (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 7)
-    )
 
 - name: Get user gpg fingerprint
   ansible.builtin.shell: |
@@ -168,10 +152,25 @@
   register: gpg_user_fingerprint
   become: yes
   become_user: "{{ gpg_generator_user }}"
+
 - name: Get user armored public key
-  ansible.builtin.shell: "gpg --homedir {{ gpg_home }}/.gnupg --export -a {{ gpg_useremail }} > {{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+  ansible.builtin.command: >
+    gpg --batch --homedir "{{ gpg_home }}/.gnupg"
+        --output "{{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+        --armor --export "{{ gpg_useremail }}"
   args:
     creates: "{{ gpg_home }}/{{ gpg_pubkeyfileexport }}"
+  become: yes
+  become_user: "{{ gpg_generator_user }}"
+
+- name: Get user armored secret key
+  ansible.builtin.command: >
+    gpg --batch --homedir "{{ gpg_home }}/.gnupg"
+        --passphrase-file "{{ gpg_home + '/' + gpg_passphrase_file }}"
+        --output "{{ gpg_home }}/{{ gpg_privkeyfile }}"
+        --armor --export-secret-key "{{ gpg_useremail }}"
+  args:
+    creates: "{{ gpg_home }}/{{ gpg_privkeyfile }}"
   become: yes
   become_user: "{{ gpg_generator_user }}"
 
