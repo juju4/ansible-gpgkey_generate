@@ -16,8 +16,7 @@ gpg_privkeyfile: "{{ gpg_user }}.priv"
 gpg_pubkeyfileexport: "{{ gpg_user }}.asc"
 gpg_fingerprint: "{{ gpg_user }}-fingerprint"
 
-gpg_keylength: 2048
-gpg_subkeylength: 2048
+gpg_algo: future-default
 gpg_expire: 360
 
 gpg_no_log: true
