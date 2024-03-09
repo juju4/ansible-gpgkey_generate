@@ -45,9 +45,8 @@ gpg_realname: "GPG Ansible user"
 gpg_useremail: "{{ gpg_user }}@localhost"
 gpg_passphrase: "Passphrase_example.CHANGE_ME!"
 
-gpg_keylength: 2048
-gpg_subkeylength: 2048
 gpg_expire: 360
+gpg_algo: future-default # Uses the expected future default algorithm for GPG. Alternatives are e.g. rsa4096.
 ```
 
 ## Continuous integration
