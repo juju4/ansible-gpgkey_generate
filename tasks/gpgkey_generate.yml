@@ -45,7 +45,7 @@
   until: pkg_result is success
 
 - name: Redhat | Ensure have enough randomness
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name:
       - haveged
       - rng-tools
