@@ -128,7 +128,7 @@
     gpg --batch --homedir "{{ gpg_home }}/.gnupg"
         --passphrase-file "{{ gpg_home + '/' + gpg_passphrase_file }}"
         --quick-generate-key "{{ gpg_uid }}"
-        {{ gpg_algo }} default "{{ gpg_expire | default('10y') }}"
+        {{ gpg_algo }} {{ gpg_key_usage }} "{{ gpg_expire | default('10y') }}"
   args:
     chdir: "{{ gpg_home }}"
   become: yes
