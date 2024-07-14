@@ -17,6 +17,7 @@ gpg_pubkeyfileexport: "{{ gpg_user }}.asc"
 gpg_fingerprint: "{{ gpg_user }}-fingerprint"
 gpg_uid: "{{ gpg_realname }} {{ gpg_useremail }}"
 
+gpg_key_usage: "default" # or "cert" for certification-only keys
 gpg_algo: future-default
 gpg_expire: 360
 
