@@ -28,9 +28,9 @@ jobs:
             experimental: true
           - molecule_distro: 'ubuntu:22.04'
             experimental: false
-          - molecule_distro: 'debian:12'
+          - molecule_distro: 'debian:13'
             experimental: true
-          - molecule_distro: 'debian:11'
+          - molecule_distro: 'debian:12'
             experimental: true
     env:
       ANSIBLE_CALLBACKS_ENABLED: profile_tasks
