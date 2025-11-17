@@ -20,5 +20,5 @@
       register: asc
     - name: Validate asc export file
       ansible.builtin.assert:
-        that: >
-          "'-----BEGIN PGP PUBLIC KEY BLOCK-----' in asc['content'] | b64decode"
+        that:
+          - "'-----BEGIN PGP PUBLIC KEY BLOCK-----' in asc['content'] | b64decode"
