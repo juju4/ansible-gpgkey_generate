@@ -11,7 +11,7 @@
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: "{{ gpgkey_generate_apt_cache_valid_time | default('3600') }}"
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   become: yes
 - name: Debian | Ensure have enough randomness
   ansible.builtin.apt:
@@ -24,8 +24,8 @@
     update_cache: yes
     cache_valid_time: "{{ gpg_apt_cache_valid_time }}"
   when: >
-    (ansible_distribution == 'Debian' and ansible_distribution_version|int >= 7) or
-    (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int >= 14)
+    (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_version']|int >= 7) or
+    (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version']|int >= 14)
   become: yes
   register: pkg_result
   until: pkg_result is success
@@ -38,8 +38,8 @@
     update_cache: yes
     cache_valid_time: "{{ gpg_apt_cache_valid_time }}"
   when: >
-    (ansible_distribution == 'Debian' and ansible_distribution_version|int < 7) or
-    (ansible_distribution == 'Ubuntu' and ansible_distribution_version|int < 14)
+    (ansible_facts['distribution'] == 'Debian' and ansible_facts['distribution_version']|int < 7) or
+    (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_version']|int < 14)
   become: yes
   register: pkg_result
   until: pkg_result is success
@@ -53,7 +53,7 @@
       - acl
     state: present
     update_cache: yes
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
   become: yes
   register: pkg_result
   until: pkg_result is success
@@ -64,9 +64,9 @@
     enabled: yes
   become: yes
   when: >
-    ansible_os_family == "RedHat" and
-    not (ansible_virtualization_type is defined and (
-        ansible_virtualization_type == "docker" or ansible_virtualization_type == "containerd"
+    ansible_facts['os_family'] == "RedHat" and
+    not (ansible_facts['virtualization_type'] is defined and (
+        ansible_facts['virtualization_type'] == "docker" or ansible_facts['virtualization_type'] == "containerd"
       )
     )
 - name: Check entropy state
@@ -101,7 +101,7 @@
 
 - name: Import gpg21
   ansible.builtin.import_tasks: gpg21.yml
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int > 16
+  when: ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version']|int > 16
 
 ## Note: matching on realname or email doesn't allow to create multiple keys. alternative?
 - name: Check existing secret key

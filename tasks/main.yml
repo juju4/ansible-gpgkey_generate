@@ -6,7 +6,7 @@
 - name: Ensure user exists
   ansible.builtin.user:
     name: "{{ gpg_generator_user }}"
-  when: ansible_distribution != 'OpenBSD' and ansible_os_family != 'Darwin' and ansible_os_family != "Alpine"
+  when: ansible_facts['distribution'] != 'OpenBSD' and ansible_facts['os_family'] != 'Darwin' and ansible_facts['os_family'] != "Alpine"
 
 - name: Import gpgkey_generate
   ansible.builtin.import_tasks: gpgkey_generate.yml
