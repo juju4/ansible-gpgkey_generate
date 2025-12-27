@@ -11,4 +11,4 @@
   ansible.builtin.set_fact:
     certificate_cn: "testing-travis.internal"
     travisci: true
-  when: ansible_env['TRAVIS'] is defined and ansible_env['TRAVIS'] == 'true'
+  when: ansible_facts['env']['TRAVIS'] is defined and ansible_facts['env']['TRAVIS'] == 'true'
