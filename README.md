@@ -1,7 +1,7 @@
-[![Actions Status - Master](https://github.com/juju4/ansible-gpgkey_generate/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-gpgkey_generate/actions?query=branch%3Amaster)
-[![Actions Status - Devel](https://github.com/juju4/ansible-gpgkey_generate/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-gpgkey_generate/actions?query=branch%3Adevel)
-
 # ansible role to generate gpg keys
+
+[![Actions Status - Main](https://github.com/juju4/ansible-gpgkey_generate/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-gpgkey_generate/actions?query=branch%3Amain)
+[![Actions Status - Devel](https://github.com/juju4/ansible-gpgkey_generate/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-gpgkey_generate/actions?query=branch%3Adevel)
 
 A simple ansible role to generate gpg keys automatically and with sane secure defaults
 
